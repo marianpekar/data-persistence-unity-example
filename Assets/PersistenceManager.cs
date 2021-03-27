@@ -45,5 +45,6 @@ public class PersistenceManager : MonoBehaviour
     {
         FileStream gameDataFile = File.Create(gameDataPath);
         binaryFormatter.Serialize(gameDataFile, this.gameData);
+        gameDataFile.Close();
     }
 }
