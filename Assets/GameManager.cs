@@ -1,13 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    // Members are assigned via Inspector
     [SerializeField]
-    private PersistenceManager persistenceManager;
+    private PersistenceManager persistenceManager = null;
 
     [SerializeField]
-    private GameObject player;
+    private GameObject player = null;
 
     private void Awake()
     {

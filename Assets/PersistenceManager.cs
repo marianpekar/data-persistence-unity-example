@@ -1,50 +1,56 @@
 ﻿using System;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
 
 public class PersistenceManager : MonoBehaviour
 {
-    private readonly BinaryFormatter binaryFormatter = new BinaryFormatter();
-
     [Serializable]
     private class GameData
     {
-        public SerializableVector3 PlayerPosition = SerializableVector3.FromVector3(Vector3.zero);
+        public Vector3 PlayerPosition;
     }
 
     private GameData gameData;
 
     public Vector3 PlayerPosition
     {
-        get => SerializableVector3.ToVector3(gameData.PlayerPosition);
-        set => gameData.PlayerPosition = SerializableVector3.FromVector3(value);
+        get => gameData.PlayerPosition;
+        set => gameData.PlayerPosition = value;
     }
 
-    private string gameDataPath;
+    private string gameDataFilename = "GameData.dat";
 
     public void LoadGameData()
     {
-        gameDataPath = Path.Combine(Application.persistentDataPath, "GameData.dat");
+        Debug.Log("Application.persistentDataPath=" + Application.persistentDataPath);
+
+        string gameDataPath = Path.Combine(Application.persistentDataPath, gameDataFilename);
 
         if (File.Exists(gameDataPath))
         {
-            FileStream gameDataFile = File.Open(gameDataPath, FileMode.Open);
-            GameData gameData = (GameData)binaryFormatter.Deserialize(gameDataFile);
-            gameDataFile.Close();
-
-            this.gameData = gameData;
+            using (BinaryReader reader = new BinaryReader(File.Open(gameDataPath, FileMode.Open))) { 
+                GameData gameData = new GameData();
+                gameData.PlayerPosition.x = reader.ReadSingle();
+                gameData.PlayerPosition.y = reader.ReadSingle();
+                gameData.PlayerPosition.z = reader.ReadSingle();
+                this.gameData = gameData;
+            }
         }
         else
         {
-            this.gameData = new GameData();
+            gameData = new GameData();
         }
     }
 
     public void SaveGameData()
     {
-        FileStream gameDataFile = File.Create(gameDataPath);
-        binaryFormatter.Serialize(gameDataFile, this.gameData);
-        gameDataFile.Close();
+        string gameDataPath = Path.Combine(Application.persistentDataPath, gameDataFilename);
+
+        using (BinaryWriter writer = new BinaryWriter(File.Open(gameDataPath, FileMode.Create)))
+        {
+            writer.Write(gameData.PlayerPosition.x);
+            writer.Write(gameData.PlayerPosition.y);
+            writer.Write(gameData.PlayerPosition.z);
+        };
     }
 }
