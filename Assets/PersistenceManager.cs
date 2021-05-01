@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 
 public class PersistenceManager : MonoBehaviour
 {
-    [Serializable]
     private class GameData
     {
         public Vector3 PlayerPosition;
